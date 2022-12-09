@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+configuration是logback的根标签
+scan="true" 表示配置文件发生了改变会自动加载
+scanPeriod="60 seconds" 检测配置文件修改的时间间隔，默认的单位是毫秒，这里我们设置的表示每分钟检测
+debug="false" debug如果设置为true，表示我们会打印出来logback自身实时的运行信息，这里我们就不需要了，因为logback自身运行时非常稳定的，我们不需要对它做日志
+-->
+
+<configuration scan="true"  debug="false">
+    <!--定义日志的输出位置-->
+    <property name="log.filepath" value="D:/myCode/logback/logback_demo01"/>
+    <!--
+        定义日志展示的格式
+        %d{yyyy-MM-dd HH:mm:ss.SSS} 定义一条日志的展示时间
+        %thread 表示执行日志的线程名称
+        %-5level 我们空出5个空格，然后显示我们的日志级别
+        %logger{100} 显示報錯的类（全限定类名）里面记录的日志，后面的{100}表示这个类名展示的最大长度是100
+        %c 當前類全限定名
+        %L 行號
+        %msg 表示我们的日志信息
+        %n 表示换行
+    -->
+    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{sessionId}] [%-5level] （%logger{100}.java.%L） -%msg%n"/>
+
+    <!--控制台的輸出-->
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!--
+        trace(追踪) < debug(调试) < info(记录信息) < warn(警告) < error(错误)
+    -->
+    <appender name="debugAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--文件輸出路径-->
+        <file>${log.filepath}/debug.log</file>
+        <encoder>
+            <!--定义日志输出的格式-->
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <!--滾動策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.filepath}/debug-%d{yyyy-MM-dd}.log%i.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>30KB</maxFileSize>
+        </rollingPolicy>
+        <!--過濾器-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <!--如果是DEBUG日志，我们同意记录-->
+            <onMatch>ACCEPT</onMatch>
+            <!--如果不是DEBUG日志，我们直接忽略-->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--定义info级别的日志的appender-->
+    <appender name="infoAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--文件路径-->
+        <file>${log.filepath}/info.log</file>
+        <!--定义日志格式-->
+        <encoder>
+            <!--定义日志输出的格式-->
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.filepath}/info-%d{yyyy-MM-dd}.log%i.gz</fileNamePattern>
+            <!--设置文件最大保存的历史数据，这里就默认30份就行了-->
+            <maxHistory>30</maxHistory>
+            <maxFileSize>30KB</maxFileSize>
+        </rollingPolicy>
+        <!--過濾器-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <!--如果是INFO日志，我们同意记录-->
+            <onMatch>ACCEPT</onMatch>
+            <!--如果不是INFO日志，我们直接忽略-->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--定义error级别的日志的appender-->
+    <appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--文件路径-->
+        <file>${log.filepath}/error.log</file>
+        <!--定义日志格式-->
+        <encoder>
+            <!--定义日志输出的格式-->
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <!--定义滚动策略,TimeBasedRollingPolicy是一个基于时间的滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${log.filepath}/error-%d{yyyy-MM-dd}.log%i.gz
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>30KB</maxFileSize>
+        </rollingPolicy>
+        <!--過濾器-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <!--如果是ERROR日志，我们同意记录-->
+            <onMatch>ERROR</onMatch>
+            <!--如果不是DEBUG日志，我们直接忽略-->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--配置異步，一組裡面只能有一個appender-->
+    <appender name="ASYNC-DEBUG" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>512</queueSize>
+        <!-- 新增这行为了打印栈堆信息 -->
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="debugAppender"/>
+    </appender>
+
+    <appender name="ASYNC-INFO" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="infoAppender"/>
+    </appender>
+
+    <appender name="ASYNC-ERROR" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="errorAppender"/>
+    </appender>
+
+    <!--
+        配置我们自己写的代码的日志记录器
+        name="com.vgxit.logback.kkdm" 表示对应包(包含子包)里面的类里面的代码产生的日志才会被下面的日志记录器记录，否则不会
+        level="DEBUG" 表示我们的日志记录的级别是DEBUG，如果我们不指定level的时候，我们这个日志记录器对应的级别自动继承根记录器
+        additivity="true" 表示會不會繼承root根日誌記錄器的記錄
+    -->
+
+    <logger name="com.macletek.demo01" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC-DEBUG"/>
+        <appender-ref ref="ASYNC-INFO"/>
+        <appender-ref ref="ASYNC-ERROR"/>
+    </logger>
+
+    <!--根日志记录器，所有包下面的日志都会被记录-->
+    <!--另類的logger，包含項目所有文件夾的日誌-->
+    <root level="ALL">
+        <appender-ref ref="consoleAppender"/>
+    </root>
+
+</configuration>

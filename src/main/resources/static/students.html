@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>用户</title>
+</head>
+
+<body>
+<div id="showUser">
+    <h2 id="hid">用戶列表</h2>
+    <div id="inputId">
+        <input id="getByNameInput" type="text" placeholder="請輸入用户名">
+        <input id="getByName" onclick="getByStudentName()" type="button" value="查詢">
+        <input id="insert" onclick="insertStudent()" type="button" value="添加用户">
+        <input id="addAndDel" onclick="addAndDel()" type="button" value="事務測試(增+刪)">
+    </div>
+    <br>
+    <div id="head">
+        <table id="table">
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>姓名</th>
+                <th>國文成績</th>
+                <th>數學成績</th>
+                <th>英文成績</th>
+                <th id="cz">操作</th>
+            </tr>
+            </thead>
+            <tbody id="tbody">
+            <!-- Data Present -->
+            </tbody>
+        </table>
+    </div>
+    <div id="show">
+
+    </div>
+</div>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+</body>
+
+
+</html>

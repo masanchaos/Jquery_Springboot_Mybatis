@@ -1,0 +1,45 @@
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.macletek.demo01.mapper.IStudentMapper">
+
+	<select id="listAllStudents"
+		resultType="Student">
+		SELECT * FROM `student`
+	</select>
+
+	<insert id="addStudent" parameterType="Student"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `student`
+		(`name`, `chineseScore`, `mathScore`, `englishScore`)
+		VALUES (#{name}, #{chineseScore}, #{mathScore}, #{englishScore})
+	</insert>
+
+	<delete id="deleteStudent" parameterType="Integer">
+		DELETE FROM `student`
+		WHERE `id` = #{id}
+	</delete>
+
+	<update id="updateStudent" parameterType="Student">
+		UPDATE `student`
+		SET
+		`name`=#{name},`chineseScore`=#{chineseScore},`mathScore`=#{mathScore},`englishScore`=#{englishScore}
+		WHERE `id` = #{id}
+	</update>
+
+	<select id="getStudentById" parameterType="Integer"
+		resultType="Student">
+		SELECT * FROM `student` WHERE `id` = #{id}
+	</select>
+
+	<select id="getStudentByName"
+		resultType="Student">
+		SELECT * FROM `student` WHERE `name` like #{name}
+	</select>
+
+	<select id="checkIdExist" parameterType="Integer"
+			resultType="Student">
+		SELECT * FROM `student` where `id` = #{id}
+	</select>
+</mapper>
